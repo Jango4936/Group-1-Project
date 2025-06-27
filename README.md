@@ -8,11 +8,6 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 
 # Release Notes
-- booking models was created
-- initial setup of django files
-
-
-# Release Notes
 
 v0.1
 - booking models was created
