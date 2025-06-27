@@ -5,5 +5,7 @@ Small clinics, dentists, salons, and barbers still take bookings by phone or on 
 
 
 # Release Notes
+
+v0.1
 - booking models was created
 - initial setup of django files
