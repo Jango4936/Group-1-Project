@@ -14,3 +14,7 @@ class Client(models.Model):
 class Appointment(models.Model):
     start_time = models.DateTimeField()
     status = models.CharField(max_length=20, default="confirmed")
+
+class TodoItem(models.Model):
+    title = models.CharField(max_length=200)
+    completed = models.BooleanField(default=False)
