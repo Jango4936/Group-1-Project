@@ -3,8 +3,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView
-from .forms import AppointmentForm
-from .models import Client, Appointment
+from .forms import AppointmentForm, ShopRegisterForm
+from .models import Client, Appointment, Shop
 
 def home(request):
     return render(request, 'home.html')
@@ -46,3 +46,20 @@ class AppointmentList(ListView):
     template_name = 'appointments.html'      # your template
     context_object_name = 'appointments'     # in template use “appointments”
     ordering = ['start_time']               # optional: sort by time
+
+
+
+# create new shop
+def ShopRegister(response):
+    if response.method == "POST":
+        form = ShopRegisterForm(response.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("/")
+    else:
+        form = ShopRegisterForm
+
+
+    
+    return render(response, "registrations/shop_register.html", {"form":form})
+
