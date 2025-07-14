@@ -9,6 +9,13 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
+v0.2
+- booking form
+- appointment list
+- simple nav bar
+- shop registration form
+- django administration(database management)
+
 v0.1
 - booking models was created
 - initial setup of django files
