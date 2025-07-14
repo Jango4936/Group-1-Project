@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Home - Booking Site</title>
-</head>
-<body>
-  <h1>Welcome to Our Booking Site</h1>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to Our Booking Site</h1>
 
   <ul>
     <li><a href="{% url 'booking:home' %}">Home</a></li>
@@ -17,5 +13,5 @@
       pass: admin123
     </p>
   </ul>
-</body>
-</html>
+
+{% endblock %}

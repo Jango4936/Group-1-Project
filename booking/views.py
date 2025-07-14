@@ -55,11 +55,12 @@ def ShopRegister(response):
         form = ShopRegisterForm(response.POST)
         if form.is_valid():
             form.save()
-            return redirect("/")
+            return redirect("/shop_register/confirmed/")
     else:
         form = ShopRegisterForm
-
-
     
     return render(response, "registrations/shop_register.html", {"form":form})
 
+# new shop confirmation
+def shopRegConfirmed(request):
+    return render(request, 'registrations/confirm.html')

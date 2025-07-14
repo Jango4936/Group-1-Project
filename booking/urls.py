@@ -13,5 +13,6 @@ urlpatterns = [
 
     # Shop login/register urls
     path('shop_register/', views.ShopRegister, name = "shop_register"),
+    path('shop_register/confirmed/', views.shopRegConfirmed, name = "shop_registered"),
     
 ]

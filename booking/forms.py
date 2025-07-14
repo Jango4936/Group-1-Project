@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm # use django builtin usercreation form for user authentications
 from django.contrib.auth.models import User
 from django import forms
+from django.db import transaction, IntegrityError
 import datetime
 
 from .models import Appointment, Client, Shop
@@ -29,4 +30,37 @@ class ShopRegisterForm(UserCreationForm):
     # create forms
     class Meta(UserCreationForm.Meta):
         model  = User
-        fields = ["shop_name", "password1", "password2", "address", "opening_hours", "closing_hours"]
+        fields = ["username", "shop_name", "password1", "password2", "address", "opening_hours", "closing_hours"]
+
+
+
+    def clean_shop_name(self):
+        name = self.cleaned_data["shop_name"]
+        if Shop.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError("That shop name is already taken.")
+        return name
+
+
+    def save(self, commit=True):
+        
+        user = super().save(commit=commit)
+
+        try:
+            with transaction.atomic():
+                Shop.objects.create(
+                    owner=user,
+                    name=self.cleaned_data["shop_name"],
+                    address=self.cleaned_data["address"],
+                    opening_hours=self.cleaned_data["opening_hours"],
+                    closing_hours=self.cleaned_data["closing_hours"],
+                )
+        except IntegrityError:                 
+            self.add_error(
+                "shop_name",
+                "That shop name was just registered by someone else. "
+                "Please pick another one.",
+            )
+            user.delete()                      
+            raise forms.ValidationError("duplicate shop")
+
+        return user

@@ -1,9 +1,24 @@
 # booking/models.py
 import datetime
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.functions import Lower
+
 
 class Shop(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
+    
+    # keep shop name case insensitive
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                name="uniq_shop_name_ci",
+            )
+        ]
+
+
+    owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shop")
     opening_hours = models.TimeField(default=datetime.time(0, 0, 0))
     closing_hours = models.TimeField(default=datetime.time(0, 0, 0))
     address = models.CharField(max_length=500,default="NULL")
