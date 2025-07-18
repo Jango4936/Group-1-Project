@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <br>
+        <h1>{{ user.shop.name }}</h1>
+        <hr>
+        <br>
+        <p>Hi, {{ user.username }} welcome back</p>
+        <a href="{% url 'booking:home' %}">Return home</a>
+
+
+        
+        <form action="/shops/logout/" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-dark">Log Out</button>
+        </form>
+
+
+    {% else %}
+        <br>
+        <h1>Opps, You are not login</h1>
+        <br>
+        <p>Please <a href="{% url 'booking:home' %}">login</a> first.</p>
+    {% endif %}
+{% endblock %}

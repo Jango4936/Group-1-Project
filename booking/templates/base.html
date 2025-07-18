@@ -45,6 +45,7 @@
         
 
         <main>
+
             {% block content %}
             <!-- child templates inject here -->
             {% endblock %}
@@ -55,7 +56,11 @@
         <main>
 
         <footer>
-            <p>&copy; {{ now|date:"Y" }} My Company</p>
+          {% if user.is_authenticated %}
+            <p>&copy; {{ now|date:"Y" }} {{ user.shop.name }}</p>
+          {% else %}
+            <p>&copy; {{ now|date:"Y" }} Easy Book</p>
+          {% endif %}
         </footer>
     </div>
 

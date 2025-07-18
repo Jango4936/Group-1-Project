@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # <-- This line makes “/” go to booking.urls
     path('', include('booking.urls', namespace='booking')),
+    
 ]

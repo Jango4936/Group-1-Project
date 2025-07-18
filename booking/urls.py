@@ -1,6 +1,6 @@
 # booking/urls.py
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'booking'
@@ -14,5 +14,8 @@ urlpatterns = [
     # Shop login/register urls
     path('shop_register/', views.ShopRegister, name = "shop_register"),
     path('shop_register/confirmed/', views.shopRegConfirmed, name = "shop_registered"),
+    path("shops/", include("django.contrib.auth.urls")),
+    
+    path('shop_homepage/', views.shopHomePage, name='shop_homepage'),
     
 ]

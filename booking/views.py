@@ -1,5 +1,7 @@
 # booking/views.py
 
+
+
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView
@@ -59,8 +61,15 @@ def ShopRegister(response):
     else:
         form = ShopRegisterForm
     
-    return render(response, "registrations/shop_register.html", {"form":form})
+    return render(response, "registration/shop_register.html", {"form":form})
 
 # new shop confirmation
 def shopRegConfirmed(request):
-    return render(request, 'registrations/confirm.html')
+    return render(request, 'registration/confirm.html')
+
+
+
+def shopHomePage(request):
+    return render(request, 'shops/shop_homepage.html')
+
+
