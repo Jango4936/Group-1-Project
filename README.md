@@ -9,6 +9,10 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
+v0.2.1
+- shop login form added
+- shop homepage added(can show current user name and shops, no appointment management yet)
+
 v0.2
 - booking form
 - appointment list
