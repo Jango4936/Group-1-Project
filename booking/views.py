@@ -4,7 +4,8 @@
 
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, DeleteView
+from django.urls import reverse_lazy
 from .forms import AppointmentForm, ShopRegisterForm
 from .models import Client, Appointment, Shop
 
@@ -49,7 +50,10 @@ class AppointmentList(ListView):
     context_object_name = 'appointments'     # in template use “appointments”
     ordering = ['start_time']               # optional: sort by time
 
-
+class AppointmentDelete(DeleteView):
+    model = Appointment
+    template_name = 'appointment_confirm_delete.html'
+    success_url = reverse_lazy('booking:appointments')
 
 # create new shop
 def ShopRegister(response):

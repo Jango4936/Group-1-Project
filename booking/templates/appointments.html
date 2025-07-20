@@ -3,39 +3,43 @@
 {% block title %}All Appointments{% endblock %}
 
 {% block content %}
-  <h1>All Scheduled Appointments</h1>
+<h1>All Scheduled Appointments</h1>
 
-  {% if appointments %}
-    <table>
-      <thead>
-        <tr>
-          <th>Client</th>
-          <th>Shop</th>
-          <th>When</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for appt in appointments %}
-          <tr>
-            <td>
-              {{ appt.client.name }}<br>
-              <small>{{ appt.client.email }}</small>
-            </td>
-            <td>
-              {% if appt.shop %}
-                {{ appt.shop.name }}
-              {% else %}
-                &mdash;
-              {% endif %}
-            </td>
-            <td>{{ appt.start_time|date:"D, M j, Y H:i" }}</td>
-            <td>{{ appt.status }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No appointments have been scheduled yet.</p>
-  {% endif %}
+{% if appointments %}
+<table>
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Shop</th>
+      <th>When</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for appt in appointments %}
+    <tr>
+      <td>
+        {{ appt.client.name }}<br>
+        <small>{{ appt.client.email }}</small>
+      </td>
+      <td>
+        {% if appt.shop %}
+        {{ appt.shop.name }}
+        {% else %}
+        &mdash;
+        {% endif %}
+      </td>
+      <td>{{ appt.start_time|date:"D, M j, Y H:i" }}</td>
+      <td>{{ appt.status }}</td>
+      <td>
+        <a href="{% url 'booking:appointment-delete' appt.pk %}">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No appointments have been scheduled yet.</p>
+{% endif %}
 {% endblock %}
