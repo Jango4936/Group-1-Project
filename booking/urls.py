@@ -10,6 +10,7 @@ urlpatterns = [
     path('schedule/', views.ScheduleAppointment.as_view(), name='schedule'),
     path('confirm/', views.confirm, name='confirm'),
     path('appointments/', views.AppointmentList.as_view(), name='appointments'),
+    path('appointments/<int:pk>/delete/', views.AppointmentDelete.as_view(), name='appointment-delete'),
 
     # Shop login/register urls
     path('shop_register/', views.ShopRegister, name = "shop_register"),

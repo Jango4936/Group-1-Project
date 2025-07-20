@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+  <h1>Confirm Appointment Deletion</h1>
+  <p>
+    Are you sure you want to delete the appointment for
+    <strong>{{ object.client }}</strong>
+    on <strong>{{ object.start_time|date:"D, M j, Y H:i" }}</strong>?
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+    <a href="{% url 'booking:appointments' %}">Cancel</a>
+  </form>
+{% endblock %}
