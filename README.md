@@ -9,6 +9,12 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
+v0.3 : Front-end Design Overhaul
+- new ui for home webpage
+- new ui for shop login/register Form
+- new ui shop management dashboard
+- added delete appointment(not in shop dashboard yet)
+
 v0.2.1
 - shop login form added
 - shop homepage added(can show current user name and shops, no appointment management yet)
