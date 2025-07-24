@@ -1,7 +1,8 @@
 # booking/views.py
 
 
-
+from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, DeleteView
@@ -73,7 +74,28 @@ def shopRegConfirmed(request):
 
 
 
-def shopHomePage(request):
-    return render(request, 'shops/shop_homepage.html')
+class shopHomePage(LoginRequiredMixin, ListView):
+    model = Appointment
+    template_name = 'shops/shop_homepage.html'      
+    context_object_name = 'appointments'    # in template use “appointments”
+    ordering = ['start_time']               # optional: sort by time
 
+    def get_queryset(self):
+        # If the user hasn't linked a shop yet → no data
+        if not hasattr(self.request.user, "shop"):
+            return Appointment.objects.none()
 
+        return (
+            Appointment.objects
+            .filter(
+                shop=self.request.user.shop,    # only this shop
+                start_time__gte=timezone.now()  # only future/ongoing appts
+            )
+            .select_related("client")          # fetch client in same query
+            .order_by("start_time")
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["today_count"] = ctx["appointments"].count()  # quick stats badge
+        return ctx

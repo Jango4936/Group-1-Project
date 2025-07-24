@@ -1,7 +1,260 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to Our Booking Site</h1>
+<!-- Main Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100 py-5">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        Stop Missing Appointments, Start Growing Your Business
+                    </h1>
+                    <p class="lead text-light mb-4">
+                        Transform your clinic, salon, or barbershop with our simple online booking system. 
+                        No more double-bookings, no-shows, or paper chaos.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% if user.is_authenticated %}
+                          <a href="{% url 'booking:shop_homepage' %}" class="btn btn-primary btn-lg">
+                              <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+                          </a>
+                        {% else %}
+                          <a href="{% url 'booking:shop_register' %}" class="btn btn-primary btn-lg">
+                              <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+                          </a>
+                        {% endif %}
+
+                        <a href="#how-it-works" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-play-circle me-2"></i>See How It Works
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image text-center">
+                    <div class="appointment-card-demo">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="bi bi-calendar-week me-2"></i>Today's Appointments</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="appointment-item mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-start">
+                                            <strong class="text-white">John Smith</strong>
+                                            <div class="text-muted small text-start">Haircut & Beard Trim</div>
+                                        </div>
+                                        <span class="badge bg-success">10:00 AM</span>
+                                    </div>
+                                </div>
+                                <div class="appointment-item mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-start">
+                                            <strong class="text-white">Sarah Johnson</strong>
+                                            <div class="text-muted small text-start">Dental Cleaning</div>
+                                        </div>
+                                        <span class="badge bg-warning">11:30 AM</span>
+                                    </div>
+                                </div>
+                                <div class="appointment-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-start">
+                                            <strong class="text-white">Mike Wilson</strong>
+                                            <div class="text-muted small text-start">Hair Color</div>
+                                        </div>
+                                        <span class="badge bg-info">2:00 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-dark-secondary">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold text-white mb-3">Everything You Need to Manage Appointments</h2>
+                <p class="lead text-muted">Built specifically for small businesses that want to grow without the complexity</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar-plus"></i>
+                    </div>
+                    <h4 class="text-white mb-3">Easy Online Booking</h4>
+                    <p class="text-muted">Customers can book appointments 24/7 from their phones. No more playing phone tag.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <h4 class="text-white mb-3">Smart Reminders(WIP)</h4>
+                    <p class="text-muted">Automatic SMS and email reminders reduce no-shows by up to 80%.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="text-white mb-3">No Double Bookings</h4>
+                    <p class="text-muted">Real-time availability prevents scheduling conflicts and keeps your day organized.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <h4 class="text-white mb-3">Mobile Friendly</h4>
+                    <p class="text-muted">Works perfectly on all devices. Your customers can book from anywhere.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h4 class="text-white mb-3">Simple Dashboard</h4>
+                    <p class="text-muted">See all your appointments, customer info, and business insights in one place.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <h4 class="text-white mb-3">Save Time</h4>
+                    <p class="text-muted">Spend less time on scheduling and more time serving your customers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold text-white mb-3">How It Works</h2>
+                <p class="lead text-muted">Get started in minutes, not hours</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4 class="text-white mb-3">Set Up Your Shop</h4>
+                    <p class="text-muted">Add your shop and services, set durations and availability. Takes less than 5 minutes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4 class="text-white mb-3">Share Your Booking Link</h4>
+                    <p class="text-muted">Get a simple link to share with customers via social media, website, or business cards.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 text-center">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4 class="text-white mb-3">Manage & Grow</h4>
+                    <p class="text-muted">Watch bookings come in automatically while you focus on what you do best.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Perfect For Section -->
+<section class="py-5 bg-dark-secondary">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold text-white mb-3">Perfect For</h2>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="business-type">
+                    <i class="bi bi-scissors business-icon"></i>
+                    <h5 class="text-white mt-3">Barbershops</h5>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="business-type">
+                    <i class="bi bi-heart-pulse business-icon"></i>
+                    <h5 class="text-white mt-3">Clinics</h5>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="business-type">
+                    <i class="bi bi-shop business-icon"></i>
+                    <h5 class="text-white mt-3">Restaurants</h5>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="business-type">
+                    <i class="bi bi-file-medical business-icon"></i>
+                    <h5 class="text-white mt-3">Dentists</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold text-white mb-3">Ready to Stop Missing Appointments?</h2>
+                <p class="lead text-muted mb-4">Join hundreds of small businesses already using BookEase</p>
+                <a href="{% url 'booking:shop_register' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-rocket-takeoff me-2"></i>Create Your Shops Now!!
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <h1>Welcome to Our Booking Site</h1>
 
   <ul>
     <li><a href="{% url 'booking:home' %}">Home</a></li>
@@ -13,6 +266,6 @@
     <p>user: admin
       pass: admin123
     </p>
-  </ul>
+  </ul> -->
 
-{% endblock %}
+

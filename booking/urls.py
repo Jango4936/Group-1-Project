@@ -17,6 +17,6 @@ urlpatterns = [
     path('shop_register/confirmed/', views.shopRegConfirmed, name = "shop_registered"),
     path("shops/", include("django.contrib.auth.urls")),
     
-    path('shop_homepage/', views.shopHomePage, name='shop_homepage'),
+    path('shop_homepage/', views.shopHomePage.as_view(), name='shop_homepage'),
     
 ]
