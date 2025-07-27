@@ -8,6 +8,7 @@ from django.db import transaction, IntegrityError
 import datetime
 
 from .models import Appointment, Client, Shop
+from .models import DAYS_OF_WEEK
 
 class AppointmentForm(forms.Form):
     # either pick an existing client or enter new info
@@ -18,6 +19,38 @@ class AppointmentForm(forms.Form):
     start_time = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )
+    def clean(self):
+        cleaned = super().clean()
+        shop = cleaned.get("shop")
+        start_dt = cleaned.get("start_time")
+
+        if shop and start_dt:
+            # map codes (e.g. 'mon') → weekday ints (Mon=0 … Sun=6)
+            code_to_int = { code: idx for idx, (code, _) in enumerate(DAYS_OF_WEEK) }
+            open_day = code_to_int[shop.opening_day]
+            close_day = code_to_int[shop.closing_day]
+            wd = start_dt.weekday()
+
+            # Day‐of‐week check 
+            if open_day <= close_day:
+                valid_day = (open_day <= wd <= close_day)
+            else:
+                valid_day = (wd >= open_day or wd <= close_day)
+
+            if not valid_day:
+                raise forms.ValidationError(
+                    "⚠ The shop is closed on that day. Please pick another date."
+                )
+
+            # Time‐of‐day check
+            t = start_dt.time()
+            if t < shop.opening_hours or t > shop.closing_hours:
+                raise forms.ValidationError(
+                    "⚠ The shop is closed at that time. Please pick a time between "
+                    f"{shop.opening_hours:%H:%M} and {shop.closing_hours:%H:%M}."
+                )
+
+        return cleaned
 
 
 class ShopRegisterForm(UserCreationForm):
@@ -26,11 +59,19 @@ class ShopRegisterForm(UserCreationForm):
     opening_hours = forms.TimeField(label="Opening Time", widget=forms.TimeInput(attrs={"type": "time", "step": 60}))
     closing_hours = forms.TimeField(label="Closing Time",widget=forms.TimeInput(attrs={"type": "time", "step": 60}))
     address = forms.CharField(max_length=500)
+    opening_day   = forms.ChoiceField(
+                       choices=DAYS_OF_WEEK,
+                       label="Opening Day",
+                   )
+    closing_day   = forms.ChoiceField(
+                       choices=DAYS_OF_WEEK,
+                       label="Closing Day",
+                   )
 
     # create forms
     class Meta(UserCreationForm.Meta):
         model  = User
-        fields = ["username", "shop_name", "password1", "password2", "address", "opening_hours", "closing_hours"]
+        fields = ["username", "shop_name", "password1", "password2", "address", "opening_hours", "closing_hours","opening_day", "closing_day"]
 
 
 
@@ -53,6 +94,8 @@ class ShopRegisterForm(UserCreationForm):
                     address=self.cleaned_data["address"],
                     opening_hours=self.cleaned_data["opening_hours"],
                     closing_hours=self.cleaned_data["closing_hours"],
+                    opening_day=self.cleaned_data["opening_day"],
+                    closing_day=self.cleaned_data["closing_day"]
                 )
         except IntegrityError:                 
             self.add_error(

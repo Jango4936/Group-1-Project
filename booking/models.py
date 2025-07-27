@@ -4,6 +4,15 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.functions import Lower
 
+DAYS_OF_WEEK = [
+    ('mon', 'Monday'),
+    ('tue', 'Tuesday'),
+    ('wed', 'Wednesday'),
+    ('thu', 'Thursday'),
+    ('fri', 'Friday'),
+    ('sat', 'Saturday'),
+    ('sun', 'Sunday'),
+]
 
 class Shop(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -23,6 +32,16 @@ class Shop(models.Model):
     closing_hours = models.TimeField(default=datetime.time(0, 0, 0))
     address = models.CharField(max_length=500,default="NULL")
     
+    opening_day   = models.CharField(
+                       max_length=3,
+                       choices=DAYS_OF_WEEK,
+                       default='mon',
+                   )
+    closing_day   = models.CharField(
+                       max_length=3,
+                       choices=DAYS_OF_WEEK,
+                       default='fri',
+                   )
 
     def __str__(self):
         return self.name
