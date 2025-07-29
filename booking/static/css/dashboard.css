@@ -209,6 +209,9 @@
 .appointments-list {
   max-height: 500px;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  
 }
 
 .appointment-item {
@@ -220,6 +223,7 @@
   margin-bottom: 1rem;
   background-color: rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
+  
 }
 
 .appointment-item:last-child {
@@ -593,3 +597,5 @@
 .btn-close-white {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+

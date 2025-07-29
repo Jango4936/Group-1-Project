@@ -1,0 +1,211 @@
+<!-- Appointments List -->
+{% load duration_filter %}
+<div class="row">
+  <div class="col-12">
+    <div class="dashboard-card">
+
+      <div class="dashboard-card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-calendar-event me-2"></i>All Appointments
+        </h5>
+        <span class="badge bg-primary ms-auto">
+          {{ total_count }} appointments
+        </span>
+      </div>
+
+      <div class="dashboard-card-body">
+        {% if appointments %}
+          <div id="appointmentsList" class="appointments-list">
+
+            {% for appt in appointments %}
+            <div class="appointment-item" data-id="{{ appt.id }}">
+
+              <div class="appointment-time me-3">
+                <div class="time">{{ appt.start_time|date:"H:i" }}</div>
+                <div class="date">{{ appt.start_time|date:"M j, Y" }}</div>
+              </div>
+
+              <div class="appointment-details flex-grow-1" data-bs-toggle="modal" data-bs-target="#viewModal{{ appt.id }}">
+                <div class="customer-name">{{ appt.client.name }}</div>
+                <div class="service-info">
+                  <i class="bi bi-telephone me-1"></i><span class="service">{{ appt.client.phone }}</span>
+                  <span class="duration"> – {{ appt.duration|duration }}</span>
+                </div>
+                <div class="contact-info">
+                  <i class="bi bi-envelope me-1"></i>{{ appt.client.email }}
+                </div>
+              </div>
+
+              <div class="appointment-actions text-end">
+                {% if appt.status == "Confirmed" %}
+                  <span class="badge bg-success mb-2">{{ appt.status }}</span>
+                {% elif appt.status == "Completed" %}
+                  <span class="badge bg-info mb-2">{{ appt.status }}</span>
+                {% elif appt.status == "Pending" %}
+                  <span class="badge bg-warning mb-2">{{ appt.status }}</span>
+                {% elif appt.status == "Cancelled" %}
+                  <span class="badge bg-danger mb-2">{{ appt.status }}</span>
+                {% else %}
+                  <span class="badge bg-danger mb-2">Error</span>
+                {% endif %}
+
+                <div class="btn-group-sm mt-1">
+                  <button type="button"
+                          class="btn btn-outline-primary btn-sm me-1 copy-btn"
+                          data-phone="{{ appt.client.phone }}"
+                          title="Copy phone number">
+                    <i class="bi bi-telephone"></i>
+                    </button>
+
+                  <button type="button"
+                            class="btn btn-outline-info btn-sm me-1 copyemail-btn"
+                            data-email="{{ appt.client.email }}"
+                            title="Copy customer email">
+                    <i class="bi bi-envelope"></i>
+                    </button>
+
+                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                          data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+
+                  <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item"
+                           href="#"
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewModal{{ appt.id }}">
+                           <i class="bi bi-eye me-2"></i>View Details</a></li>
+                    <li>
+                      <form  method="post" action="{% url 'booking:appointment-complete' appt.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item text-info">
+                          <i class="bi bi-clipboard-check me-2"></i>Mark Completed
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <form  method="post" action="{% url 'booking:appointment-confirmed' appt.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item text-success">
+                          <i class="bi bi-check-circle me-2"></i>Mark Confirmed
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <form  method="post" action="{% url 'booking:appointment-cancelled' appt.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item text-danger">
+                          <i class="bi bi-x-circle me-2"></i>Mark Cancelled
+                        </button>
+                      </form>
+                    </li>
+
+
+
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger"
+                           href="#" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ appt.id }}">
+                           <i class="bi bi-trash me-2"></i>Delete</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- View Details Modal -->
+            <div class="modal fade" id="viewModal{{ appt.id }}" tabindex="-1">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content bg-dark-card">
+
+                  <!-- header -->
+                  <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-light">
+                      <i class="bi bi-info-circle me-2"></i>Appointment Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
+                  </div>
+
+                  <!-- body -->
+                  <div class="modal-body">
+                    <h6 class="text-light mb-3">Client Information</h6>
+                    <ul class="list-unstyled text-des">
+                      <li><i class="bi bi-person me-2"></i>{{ appt.client.name }}</li>
+                      <li><i class="bi bi-telephone me-2"></i>{{ appt.client.phone }}</li>
+                      <li><i class="bi bi-envelope me-2"></i>{{ appt.client.email }}</li>
+                    </ul>
+
+                    <h6 class="text-light mt-4 mb-3">Appointment</h6>
+                    <ul class="list-unstyled text-des">
+                      <li><i class="bi bi-calendar3 me-2"></i>
+                          Time : {{ appt.start_time|date:"D, M j, Y  H:i" }}</li>
+                      <li><i class="bi bi-clock me-2"></i>
+                          Duration : {{ appt.duration|duration }}</li>
+                      <li><i class="bi bi-tag me-2"></i>Status : {{ appt.status }}</li>
+                      <li><hr></li>
+                      <li><i class="bi bi-chat-left-text me-2"></i>Notes : {{ appt.note }}</li>
+                    </ul>
+                  </div>
+
+                  <!-- footer -->
+                  <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Close</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal{{ appt.id }}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content bg-dark-card">
+                  <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-light">
+                      <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                      Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+
+                  <form  method="post" action="{% url 'booking:shops-appointment-delete' appt.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <p class="text-light">
+                        Are you sure you want to delete the appointment for
+                        <strong>{{ appt.client.name }}</strong>
+                        on <strong>{{ appt.start_time|date:"D M j, Y H:i" }}</strong>?
+                      </p>
+                      <p class="text-des small">This action cannot be undone.</p>
+                    </div>
+
+                    <div class="modal-footer border-secondary">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                      </button>
+                      <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete Appointment
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+
+          </div>
+          {% else %}
+          <div class="empty-state py-5 text-center">
+            <i class="bi bi-calendar-x fs-3"></i>
+            <h6 class="mt-3">No appointments found</h6>
+            <p class="text">Enjoy your free time or promote your services to get more bookings!</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

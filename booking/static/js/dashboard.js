@@ -23,11 +23,5 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.add("collapsed")
     mainContent.classList.add("expanded")
   }
-
-
-
-  // Handle window resize
-  window.addEventListener("resize", handleMobileSidebar)
-  handleMobileSidebar() // Initial call
   
 })

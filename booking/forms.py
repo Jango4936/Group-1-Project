@@ -19,6 +19,27 @@ class AppointmentForm(forms.Form):
     start_time = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )
+
+
+
+    # durations
+    DURATION_CHOICES = [
+        (30,  "30 minutes"),
+        (45,  "45 minutes"),
+        (60,  "1 hour"),
+        (120, "2 hours"),
+    ]
+
+    duration = forms.TypedChoiceField(
+        label="Duration",
+        choices=DURATION_CHOICES,                 # value = minutes
+        coerce=lambda m: datetime.timedelta(minutes=int(m)),
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+    note = forms.CharField(widget=forms.Textarea)
+
+
     def clean(self):
         cleaned = super().clean()
         shop = cleaned.get("shop")

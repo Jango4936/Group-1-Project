@@ -55,10 +55,26 @@ class Client(models.Model):
         return f"{self.name} ({self.email})"
 
 class Appointment(models.Model):
+
+    STATUS_CHOICES = [
+        ("Pending",    "Pending"),
+        ("Confirmed",  "Confirmed"),
+        ("Cancelled",  "Cancelled"),
+        ("Completed",  "Completed"),
+    ]
+
+
     client     = models.ForeignKey(Client, on_delete=models.CASCADE)
     shop       = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True, blank=True)
     start_time = models.DateTimeField()
-    status     = models.CharField(max_length=20, default="confirmed")
+    status     = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="Confirmed",
+    )
+    duration   = models.DurationField(default=datetime.timedelta(minutes=30))
+    note       = models.TextField(max_length=666, default="-")
+
 
     def __str__(self):
         return f"{self.client.name} @ {self.start_time}"
