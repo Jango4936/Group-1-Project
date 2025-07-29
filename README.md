@@ -9,15 +9,30 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
+v0.4 : Front-end Design Overhaul
+- added new ui for appointment management
+- added edit appointment status features
+- added view appointment info features
+- added ability to delete appointment features (in shop dashboard)
+- added copy phone/email to clipboard shortcut features
+- added appointments filter and search bar
+- added note in appt model/form
+- added durations in appt model/form
+- fix shop homepage not showing data correctly
+- fix clients can book outside opening and closing days and times
+
+
 v0.3 : Front-end Design Overhaul
 - new ui for home webpage
 - new ui for shop login/register Form
 - new ui shop management dashboard
 - added delete appointment(not in shop dashboard yet)
 
+
 v0.2.1
 - shop login form added
 - shop homepage added(can show current user name and shops, no appointment management yet)
+
 
 v0.2
 - booking form
@@ -25,6 +40,7 @@ v0.2
 - simple nav bar
 - shop registration form
 - django administration(database management)
+
 
 v0.1
 - booking models was created
