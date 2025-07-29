@@ -9,7 +9,7 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
-v0.4 : Front-end Design Overhaul
+v0.4 : Appointment Management Update
 - added new ui for appointment management
 - added edit appointment status features
 - added view appointment info features
