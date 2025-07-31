@@ -170,3 +170,86 @@ class BookingAppTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         # check that the form error appears on page
         self.assertContains(resp, "This field is required.")
+
+
+        # Some edge cases to consider for more test cases
+            
+    def test_appointment_ends_after_closing(self):
+        data = {
+            "name": "Late Client",
+            "email": "late@example.com",
+            "phone": "111",
+            "shop": self.shop.id,
+            "start_time": "2025-08-04T16:45",  # Shop closes at 17:00
+            "duration": 30,
+            "note": "Too late"
+        }
+        form = AppointmentForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("closed at that time", form.errors["__all__"][0])
+
+    def test_appointment_invalid_email_format(self):
+        data = {
+            "name": "Bad Email",
+            "email": "not-an-email",
+            "phone": "123",
+            "shop": self.shop.id,
+            "start_time": "2025-08-04T10:00",
+            "duration": 30,
+            "note": "Invalid email"
+        }
+        form = AppointmentForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_shop_register_duplicate_username(self):
+        User.objects.create_user(username="dupeuser", password="pass")
+        form_data = {
+            "username": "dupeuser",
+            "password1": "complexpass123",
+            "password2": "complexpass123",
+            "shop_name": "New Shop",
+            "opening_hours": "08:00",
+            "closing_hours": "16:00",
+            "address": "100 New Rd",
+            "opening_day": "mon",
+            "closing_day": "fri"
+        }
+        form = ShopRegisterForm(form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+
+    def test_shop_register_password_mismatch(self):
+        form_data = {
+            "username": "testuser",
+            "password1": "abc123",
+            "password2": "xyz123",
+            "shop_name": "Mismatch Shop",
+            "opening_hours": "08:00",
+            "closing_hours": "16:00",
+            "address": "222 Wrong Rd",
+            "opening_day": "mon",
+            "closing_day": "fri"
+        }
+        form = ShopRegisterForm(form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("password2", form.errors)
+
+    def test_post_invalid_shop_id(self):
+        data = {
+            "name": "Ghost Shop",
+            "email": "ghost@example.com",
+            "phone": "000",
+            "shop": 9999,  # Non-existent ID
+            "start_time": "2025-08-04T10:00",
+            "duration": 30,
+            "note": ""
+        }
+        resp = self.client.post(reverse("booking:schedule"), data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Select a valid choice")
+
+    def test_direct_access_confirm_page(self):
+        resp = self.client.get(reverse("booking:confirm"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "confirmation")  
