@@ -42,6 +42,7 @@ class ScheduleAppointment(View):
                 shop=form.cleaned_data['shop'],
                 start_time=form.cleaned_data['start_time'],
                 duration=form.cleaned_data['duration'],
+                note=form.cleaned_data['note']
             )
             return redirect('booking:confirm')
         return render(request, self.template_name, {'form': form})
