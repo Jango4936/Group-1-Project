@@ -82,7 +82,7 @@
                 
                 <div class="sidebar-divider"></div>
                 
-                <a href="" class="sidebar-link {% if request.resolver_match.url_name == 'shop_settings' %}active{% endif %}">
+                <a href="{% url 'booking:shop_settings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'shop_settings' %}active{% endif %}">
                     <i class="bi bi-shop"></i>
                     <span>Shop Settings</span>
                 </a>

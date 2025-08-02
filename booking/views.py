@@ -5,13 +5,13 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import ListView, DeleteView
+from django.views.generic import ListView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from .forms import AppointmentForm, ShopRegisterForm
-from .models import Client, Appointment, Shop
+from .models import Client, Appointment, Shop, DAYS_OF_WEEK
 
 def home(request):
     return render(request, 'home.html')
@@ -48,6 +48,20 @@ class ScheduleAppointment(View):
 def confirm(request):
     return render(request, 'confirm.html')
 # booking/views.py
+
+class shopSettingsView(LoginRequiredMixin, TemplateView):
+    template_name = "shops/shop_settings.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from .models import DAYS_OF_WEEK
+        context["days_of_week"] = DAYS_OF_WEEK
+        return context
+
+def shop_settings_view(request):
+    return render(request, "shops/shop_settings.html", {
+        "days_of_week": DAYS_OF_WEEK
+    })
 
 class AppointmentList(ListView):
     model = Appointment
