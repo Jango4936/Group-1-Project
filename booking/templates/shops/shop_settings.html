@@ -1,0 +1,251 @@
+<!-- This file is extremely ugly but it works -->
+{% extends "shops/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Shop Settings - EasyBook{% endblock %}
+
+{% block content %}
+<!-- Shop Name -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-1">Shop Name</h2>
+                    <p class="text-des">{{ user.shop.name }}</p>
+                </div>
+                <div>
+                    <!-- Edit Button triggers modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShopNameModal">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shop Address -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-1">Shop Address</h2>
+                    <p class="text-des">{{ user.shop.address }}</p>
+                </div>
+                <div>
+                    <!-- Edit Button triggers modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShopAddressModal">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phone number -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-1">Phone Number</h2>
+                    <p class="text-des">{{ user.shop.phone }}</p>
+                </div>
+                <div>
+                    <!-- Edit Button triggers modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editPhoneModal">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hours -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-1">Hours</h2>
+                    <p class="text-des">{{ user.shop.opening_hours }} - {{ user.shop.closing_hours }}</p>
+                </div>
+                <div>
+                    <!-- Edit Button triggers modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editHoursModal">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Date-->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-white mb-1">Days Open</h2>
+                    <p class="text-des">{{ user.shop.opening_day }} - {{ user.shop.closing_day }}</p>
+                </div>
+                <div>
+                    <!-- Edit Button triggers modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editDaysModal">
+                        <i class="bi bi-pencil me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Shop Name Modal -->
+<div class="modal fade" id="editShopNameModal" tabindex="-1" aria-labelledby="editShopNameLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'booking:shop_settings' %}">
+      {% csrf_token %}
+      <div class="modal-content bg-dark-custom text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editShopNameLabel">Edit Shop Name</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="shopNameInput" class="form-label">New Shop Name</label>
+            <input type="text" class="form-control" id="shopNameInput" name="shop_name" value="{{ user.shop.name }}" required>
+          </div>
+          
+          <!-- Add more fields here for address, phone, etc. -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Shop Address Modal -->
+<div class="modal fade" id="editShopAddressModal" tabindex="-1" aria-labelledby="editShopAddressLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'booking:shop_settings' %}">
+      {% csrf_token %}
+      <div class="modal-content bg-dark-custom text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editShopAddressLabel">Edit Shop Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="shopAddressInput" class="form-label">New Shop Address</label>
+            <input type="text" class="form-control" id="shopAddressInput" name="shop_address" value="{{ user.shop.address }}" required>
+          </div>
+          <!-- Add more fields here for address, phone, etc. -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Phone Number Modal -->
+<div class="modal fade" id="editPhoneModal" tabindex="-1" aria-labelledby="editPhoneLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'booking:shop_settings' %}">
+      {% csrf_token %}
+      <div class="modal-content bg-dark-custom text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPhoneLabel">Edit Phone Number</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="PhoneNumberInput" class="form-label">New Phone Number</label>
+            <input type="text" class="form-control" id="PhoneNumberInput" name="phone_number" value="{{ user.shop.phone|default:'Phone not set' }}" required>
+          </div>
+          <!-- Add more fields here for address, phone, etc. -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Hours Modal -->
+<div class="modal fade" id="editHoursModal" tabindex="-1" aria-labelledby="editHoursLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'booking:shop_settings' %}">
+      {% csrf_token %}
+      <div class="modal-content bg-dark-custom text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editHoursLabel">Edit Hours</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="OpeningHoursInput" class="form-label">New Opening Hours</label>
+            <input type="time" class="form-control" id="OpeningHoursInput" name="opening_hours" required>
+            <br>
+            <label for="ClosingHoursInput" class="form-label">New Closing Hours</label>
+            <input type="time" class="form-control" id="ClosingHoursInput" name="closing_hours" required>
+          </div>
+          <!-- Add more fields here for address, phone, etc. -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editDaysModal" tabindex="-1" aria-labelledby="editDaysLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'booking:shop_settings' %}">
+      {% csrf_token %}
+      <div class="modal-content bg-dark-custom text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDaysLabel">Edit Days Open</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="OpeningDayInput" class="form-label">Opening Day</label>
+            <select class="form-select" id="OpeningDayInput" name="opening_day" required>
+              {% for code, label in days_of_week %}
+                <option value="{{ code }}" {% if user.shop.opening_day == code %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="ClosingDayInput" class="form-label">Closing Day</label>
+            <select class="form-select" id="ClosingDayInput" name="closing_day" required>
+              {% for code, label in days_of_week %}
+                <option value="{{ code }}" {% if user.shop.closing_day == code %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
