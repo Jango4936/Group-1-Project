@@ -3,6 +3,7 @@ import datetime
 from datetime import date, timedelta
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, DeleteView, TemplateView
@@ -58,6 +59,34 @@ class shopSettingsView(LoginRequiredMixin, TemplateView):
         from .models import DAYS_OF_WEEK
         context["days_of_week"] = DAYS_OF_WEEK
         return context
+    
+    def post(self, request, *args, **kwargs):
+        shop = request.user.shop
+
+        if "shop_name" in request.POST:
+            shop.name = request.POST.get("shop_name")
+
+        if "shop_address" in request.POST:
+            shop.address = request.POST.get("shop_address")
+
+        if "phone_number" in request.POST:
+            shop.phone = request.POST.get("phone_number")
+
+        if "opening_hours" in request.POST:
+            shop.opening_hours = request.POST.get("opening_hours")
+
+        if "closing_hours" in request.POST:
+            shop.closing_hours = request.POST.get("closing_hours")
+
+        if "opening_day" in request.POST:
+            shop.opening_day = request.POST.get("opening_day")           
+
+        if "closing_day" in request.POST:
+            shop.closing_day = request.POST.get("closing_day") 
+
+        shop.save()
+        messages.success(request, "Shop settings updated!")
+        return redirect("booking:shop_settings")
 
 def shop_settings_view(request):
     return render(request, "shops/shop_settings.html", {
