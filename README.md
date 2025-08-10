@@ -9,6 +9,16 @@ Clients book in seconds; owners manage an interactive calendar and get no-show-r
 
 # Release Notes
 
+v0.5 : Shop Booking Page/Settings Update
+- added shop booking page for every shop (unique sharable link)
+- added shareable button to copy the shop booking page link
+- added more data for the shop model (phone, description, slug)
+- added functional shop settings page (ability to modify existing shop info)
+- revamp the shop setting UI for a better look
+- some minor changes
+
+
+
 v0.4 : Appointment Management Update
 - added new ui for appointment management
 - added edit appointment status features
