@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
+from django import forms
 from .forms import AppointmentForm, ShopRegisterForm
 from .models import Client, Appointment, Shop, DAYS_OF_WEEK
 
@@ -83,6 +84,10 @@ class shopSettingsView(LoginRequiredMixin, TemplateView):
 
         if "closing_day" in request.POST:
             shop.closing_day = request.POST.get("closing_day") 
+
+        if "shop_description" in request.POST:
+            shop.description = request.POST.get("shop_description") 
+        
 
         shop.save()
         messages.success(request, "Shop settings updated!")
@@ -276,3 +281,52 @@ class MarkConfirmed(UpdateShopAppointmentStatus):
 
 class MarkCancelled(UpdateShopAppointmentStatus):
     status_value = "Cancelled"
+
+
+# Shop Appointment Schedule Page
+class ShopAppointment(View):
+    template_name = 'book_shop.html'
+
+    def get(self, request, slug):
+        shop = get_object_or_404(Shop, slug=slug)
+        form = AppointmentForm(initial={'shop': shop})
+        form.fields['shop'].queryset = Shop.objects.filter(pk=shop.pk)
+        form.fields['shop'].widget = forms.HiddenInput()
+        return render(request, self.template_name, {'form': form, 'shop': shop})
+
+    def post(self, request, slug):
+        shop = get_object_or_404(Shop, slug=slug)
+        form = AppointmentForm(request.POST)
+
+        # keep it tied to this shop & hidden on re-render
+        form.fields['shop'].queryset = Shop.objects.filter(pk=shop.pk)
+        form.fields['shop'].widget = forms.HiddenInput()
+
+        if form.is_valid():
+            # get or create client
+            client, _ = Client.objects.get_or_create(
+                email=form.cleaned_data['email'],
+                defaults={
+                    'name':  form.cleaned_data['name'],
+                    'phone': form.cleaned_data['phone'],
+                }
+            )
+            # keep name/phone in sync if returning client
+            if client.name != form.cleaned_data['name'] or client.phone != form.cleaned_data['phone']:
+                client.name  = form.cleaned_data['name']
+                client.phone = form.cleaned_data['phone']
+                client.save(update_fields=['name', 'phone'])
+
+            # create appointment bound to THIS shop
+            Appointment.objects.create(
+                client=client,
+                shop=shop, 
+                start_time=form.cleaned_data['start_time'],
+                duration=form.cleaned_data['duration'],
+                note=form.cleaned_data['note'],
+                status="Confirmed",
+            )
+            return redirect('booking:confirm')
+
+        # not valid: show errors (incl. your day/hour checks)
+        return render(request, self.template_name, {'form': form, 'shop': shop})

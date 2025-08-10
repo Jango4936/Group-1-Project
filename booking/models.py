@@ -3,6 +3,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.functions import Lower
+from django.utils.text import slugify
 
 DAYS_OF_WEEK = [
     ('mon', 'Monday'),
@@ -16,6 +17,7 @@ DAYS_OF_WEEK = [
 
 class Shop(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, blank=True)
     
     # keep shop name case insensitive
     class Meta:
@@ -28,9 +30,11 @@ class Shop(models.Model):
 
 
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shop")
+    phone = models.CharField(max_length=20,default="NULL")
     opening_hours = models.TimeField(default=datetime.time(0, 0, 0))
     closing_hours = models.TimeField(default=datetime.time(0, 0, 0))
     address = models.CharField(max_length=500,default="NULL")
+    description = models.CharField(max_length=1000,default="NULL")
     
     opening_day   = models.CharField(
                        max_length=3,
@@ -45,6 +49,23 @@ class Shop(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def _unique_slug(self, base):
+        base = slugify(base, allow_unicode=True)
+        slug = base or "shop"
+        i = 2
+        Model = self.__class__
+        while Model.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base}-{i}"
+            i += 1
+        return slug
+
+    def save(self, *args, **kwargs):
+        # Only set/refresh slug if it's empty (keeps public links stable)
+        if not self.slug:
+            self.slug = self._unique_slug(self.name)
+        super().save(*args, **kwargs)
+
 
 class Client(models.Model):
     name  = models.CharField(max_length=100)

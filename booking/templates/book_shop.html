@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Book with {{ shop.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 min-vh-100">
+  <div class="row justify-content-center g-4">
+    <!-- Shop Info Card -->
+    <div class="col-lg-5">
+      <div class="dashboard-card h-100 fade-in">
+        <div class="dashboard-card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-shop me-2"></i>{{ shop.name }}
+          </h5>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="meta-item">
+            <i class="bi bi-telephone me-2"></i>{{ shop.phone|default:"Phone not set" }}
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-clock me-2"></i>
+            {{ shop.opening_hours|time:"H:i" }} – {{ shop.closing_hours|time:"H:i" }}
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-calendar-day me-2"></i>
+            {{ shop.get_opening_day_display }} – {{ shop.get_closing_day_display }}
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-geo-alt me-2"></i>{{ shop.address }}
+          </div>
+          <hr>
+          <div class="meta-item">
+            <i class="bi bi-info-circle me-2"></i>{{ shop.description|default:"description not set" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Form Card -->
+    <div class="col-lg-7">
+      <div class="dashboard-card h-100 fade-in">
+        <div class="dashboard-card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar-plus me-2"></i>Book your slot
+          </h5>
+        </div>
+        <div class="dashboard-card-body">
+          <p class="text-des small mb-4">
+            Please fill out your details below
+          </p>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for err in form.non_field_errors %}
+                  <div>{{ err }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <!-- Render individual fields for more control -->
+            <div class="mb-3">
+              {{ form.name|as_crispy_field }}
+            </div>
+            <div class="mb-3">
+              {{ form.email|as_crispy_field }}
+            </div>
+            <div class="mb-3">
+              {{ form.phone|as_crispy_field }}
+            </div>
+            <div class="mb-3">
+              {{ form.start_time|as_crispy_field }}
+            </div>
+            <div class="mb-3">
+              {{ form.duration|as_crispy_field }}
+            </div>
+            <div class="mb-3">
+              {{ form.note|as_crispy_field }}
+            </div>
+            {# hidden shop field #}
+            {{ form.shop }}
+            <button type="submit" class="btn btn-primary w-100">
+              Schedule Appointment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

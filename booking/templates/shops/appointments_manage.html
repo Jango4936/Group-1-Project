@@ -13,7 +13,7 @@
                     <p class="text-des">Manage all your appointments for {{ user.shop.name }}</p>
                 </div>
                 <div>
-                    <a href="{% url 'booking:schedule' %}" class="btn btn-primary">
+                    <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'booking:book-shop' user.shop.slug %}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-2"></i>New Appointment
                     </a>
                 </div>

@@ -25,4 +25,7 @@ urlpatterns = [
     path("appointments_manage/<int:pk>/complete/", views.MarkCompleted.as_view(),name="appointment-complete"),
     path("appointments_manage/<int:pk>/confirmed/", views.MarkConfirmed.as_view(),name="appointment-confirmed"),
     path("appointments_manage/<int:pk>/cancelled/", views.MarkCancelled.as_view(),name="appointment-cancelled"),
+
+    path('book/<slug:slug>/', views.ShopAppointment.as_view(), name='book-shop'),
+
 ]

@@ -80,6 +80,8 @@ class ShopRegisterForm(UserCreationForm):
     opening_hours = forms.TimeField(label="Opening Time", widget=forms.TimeInput(attrs={"type": "time", "step": 60}))
     closing_hours = forms.TimeField(label="Closing Time",widget=forms.TimeInput(attrs={"type": "time", "step": 60}))
     address = forms.CharField(max_length=500)
+    phone      = forms.CharField(max_length=20)
+    description = forms.CharField(max_length=500)
     opening_day   = forms.ChoiceField(
                        choices=DAYS_OF_WEEK,
                        label="Opening Day",
@@ -92,7 +94,7 @@ class ShopRegisterForm(UserCreationForm):
     # create forms
     class Meta(UserCreationForm.Meta):
         model  = User
-        fields = ["username", "shop_name", "password1", "password2", "address", "opening_hours", "closing_hours","opening_day", "closing_day"]
+        fields = ["username", "shop_name", "password1", "password2", "phone", "address", "description", "opening_hours", "closing_hours","opening_day", "closing_day"]
 
 
 
@@ -112,11 +114,13 @@ class ShopRegisterForm(UserCreationForm):
                 Shop.objects.create(
                     owner=user,
                     name=self.cleaned_data["shop_name"],
+                    phone=self.cleaned_data["phone"],
                     address=self.cleaned_data["address"],
+                    description=self.cleaned_data["description"],
                     opening_hours=self.cleaned_data["opening_hours"],
                     closing_hours=self.cleaned_data["closing_hours"],
                     opening_day=self.cleaned_data["opening_day"],
-                    closing_day=self.cleaned_data["closing_day"]
+                    closing_day=self.cleaned_data["closing_day"],
                 )
         except IntegrityError:                 
             self.add_error(

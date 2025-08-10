@@ -40,7 +40,7 @@
                         <li><a class="dropdown-item" href="">
                             <i class="bi bi-person me-2"></i>Profile
                         </a></li>
-                        <li><a class="dropdown-item" href="">
+                        <li><a class="dropdown-item" href="{% url 'booking:shop_settings' %}">
                             <i class="bi bi-gear me-2"></i>Shop Settings
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -69,12 +69,12 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{% url 'booking:shop_homepage' %}" class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <a href="{% url 'booking:shop_homepage' %}" class="sidebar-link {% if request.resolver_match.url_name == 'shop_homepage' %}active{% endif %}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Overview</span>
                 </a>
                 
-                <a href="{% url 'booking:appointments_manage' %}" class="sidebar-link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}">
+                <a href="{% url 'booking:appointments_manage' %}" class="sidebar-link {% if request.resolver_match.url_name == 'appointments_manage' %}active{% endif %}">
                     <i class="bi bi-calendar-event"></i>
                     <span>Appointments</span>
                 </a>
