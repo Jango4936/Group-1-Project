@@ -15,6 +15,7 @@ v0.5 : Shop Booking Page/Settings Update
 - added more data for the shop model (phone, description, slug)
 - added functional shop settings page (ability to modify existing shop info)
 - revamp the shop setting UI for a better look
+- fix double booking
 - some minor changes
 
 
