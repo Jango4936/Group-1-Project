@@ -11,6 +11,8 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
+from django.db import transaction
+from django.db.models import F, ExpressionWrapper, DateTimeField
 from django import forms
 from .forms import AppointmentForm, ShopRegisterForm
 from .models import Client, Appointment, Shop, DAYS_OF_WEEK
@@ -23,34 +25,80 @@ class ScheduleAppointment(View):
 
     def get(self, request):
         form = AppointmentForm()
+        # generic page must choose a shop
+        form.fields['shop'].required = True
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         form = AppointmentForm(request.POST)
-        if form.is_valid():
-            # get or create client
-            client, created = Client.objects.get_or_create(
-                email=form.cleaned_data['email'],
-                defaults={
-                    'name': form.cleaned_data['name'],
-                    'phone': form.cleaned_data['phone']
-                }
-            )
-            # if existing client but phone/name changed, you could update them here
+        # generic page must choose a shop
+        form.fields['shop'].required = True
 
-            # create appointment
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form})
+
+        shop     = form.cleaned_data.get('shop')
+        start_dt = form.cleaned_data['start_time']
+        duration = form.cleaned_data['duration']
+        end_dt   = start_dt + duration
+
+        if not shop:
+            form.add_error('shop', "Please choose a shop.")
+            return render(request, self.template_name, {'form': form})
+
+        # Optional defensive check (form may already enforce this)
+        if (start_dt.time() < shop.opening_hours
+            or end_dt.time() > shop.closing_hours
+            or start_dt.date() != end_dt.date()):
+            form.add_error('start_time', "⚠ Appointment must fit within business hours and not span days.")
+            return render(request, self.template_name, {'form': form})
+
+        blocking_statuses = ["Pending", "Confirmed"]
+
+        from django.db import transaction
+        from django.db.models import F, ExpressionWrapper, DateTimeField
+
+        with transaction.atomic():
+            conflict = (
+                Appointment.objects
+                .filter(shop=shop, status__in=blocking_statuses)
+                .annotate(existing_end=ExpressionWrapper(
+                    F("start_time") + F("duration"),
+                    output_field=DateTimeField()
+                ))
+                .filter(
+                    start_time__lt=end_dt,     # existing starts before new ends
+                    existing_end__gt=start_dt  # existing ends after new starts
+                )
+                .exists()
+            )
+            if conflict:
+                form.add_error('start_time', "⚠ That time overlaps another booking, please pick another time.")
+                return render(request, self.template_name, {'form': form})
+
+            # create/update client then create appt
+            client, _ = Client.objects.get_or_create(
+                email=form.cleaned_data['email'],
+                defaults={'name': form.cleaned_data['name'], 'phone': form.cleaned_data['phone']}
+            )
+            if client.name != form.cleaned_data['name'] or client.phone != form.cleaned_data['phone']:
+                client.name  = form.cleaned_data['name']
+                client.phone = form.cleaned_data['phone']
+                client.save(update_fields=['name', 'phone'])
+
             Appointment.objects.create(
                 client=client,
-                shop=form.cleaned_data['shop'],
-                start_time=form.cleaned_data['start_time'],
-                duration=form.cleaned_data['duration'],
-                note=form.cleaned_data['note']
+                shop=shop,
+                start_time=start_dt,
+                duration=duration,
+                note=form.cleaned_data['note'],
+                status="Confirmed",
             )
-            return redirect('booking:confirm')
-        return render(request, self.template_name, {'form': form})
+
+        return redirect('booking:confirm')
 def confirm(request):
     return render(request, 'confirm.html')
-# booking/views.py
+
 
 class shopSettingsView(LoginRequiredMixin, TemplateView):
     template_name = "shops/shop_settings.html"
@@ -303,6 +351,40 @@ class ShopAppointment(View):
         form.fields['shop'].widget = forms.HiddenInput()
 
         if form.is_valid():
+            
+            # cleaned data
+            start_dt  = form.cleaned_data['start_time']
+            duration  = form.cleaned_data['duration']
+            end_dt    = start_dt + duration
+
+            # keep inside business hours & same day
+            if start_dt.time() < shop.opening_hours or end_dt.time() > shop.closing_hours or start_dt.date() != end_dt.date():
+                form.add_error('start_time',
+                    "⚠ Appointment must fit within business hours and not span days.")
+                return render(request, self.template_name, {'form': form, 'shop': shop})
+
+            blocking_statuses = ["Pending", "Confirmed"]
+
+            # Do the overlap check + create atomically to avoid races
+            with transaction.atomic():
+                conflict_exists = (
+                    Appointment.objects
+                    .filter(shop=shop, status__in=blocking_statuses)
+                    .annotate(existing_end=ExpressionWrapper(
+                        F("start_time") + F("duration"),
+                        output_field=DateTimeField()
+                    ))
+                    .filter(
+                        start_time__lt=end_dt,      # existing starts before new ends
+                        existing_end__gt=start_dt   # existing ends after new starts
+                    )
+                    .exists()
+                )
+                if conflict_exists:
+                    form.add_error('start_time', "⚠ That time overlaps another booking, please pick another time.")
+                    return render(request, self.template_name, {'form': form, 'shop': shop})
+            
+            
             # get or create client
             client, _ = Client.objects.get_or_create(
                 email=form.cleaned_data['email'],

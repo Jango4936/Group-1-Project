@@ -3,6 +3,8 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm # use django builtin usercreation form for user authentications
 from django.contrib.auth.models import User
+from django.db.models import F, ExpressionWrapper
+from django.db.models import DateTimeField
 from django import forms
 from django.db import transaction, IntegrityError
 import datetime
@@ -44,6 +46,7 @@ class AppointmentForm(forms.Form):
         cleaned = super().clean()
         shop = cleaned.get("shop")
         start_dt = cleaned.get("start_time")
+        duration  = cleaned.get("duration")
 
         if shop and start_dt:
             # map codes (e.g. 'mon') → weekday ints (Mon=0 … Sun=6)
@@ -70,8 +73,37 @@ class AppointmentForm(forms.Form):
                     "⚠ The shop is closed at that time. Please pick a time between "
                     f"{shop.opening_hours:%H:%M} and {shop.closing_hours:%H:%M}."
                 )
+        
+        if shop and start_dt and duration:
+            end_dt = start_dt + duration
+
+            # keep appointment within business hours (same-day case)
+            if start_dt.time() < shop.opening_hours or end_dt.time() > shop.closing_hours:
+                raise forms.ValidationError(
+                    "⚠ Time must be within business hours "
+                    f"({shop.opening_hours:%H:%M}–{shop.closing_hours:%H:%M})."
+                )
+
+            # Block overlaps with Pending/Confirmed (cancelled/completed don't block)
+            blocking_statuses = ["Pending", "Confirmed"]
+            conflict_qs = (
+                Appointment.objects
+                .filter(shop=shop, status__in=blocking_statuses)
+                .annotate(existing_end=ExpressionWrapper(
+                    F("start_time") + F("duration"),
+                    output_field=DateTimeField()
+                ))
+                .filter(
+                    start_time__lt=end_dt,   # existing starts before new ends
+                    existing_end__gt=start_dt  # existing ends after new starts
+                )
+            )
+            if conflict_qs.exists():
+                raise forms.ValidationError("⚠ That time overlaps another booking for this shop, please pick another time.")
 
         return cleaned
+        
+
 
 
 class ShopRegisterForm(UserCreationForm):
