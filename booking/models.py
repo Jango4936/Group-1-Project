@@ -17,7 +17,16 @@ DAYS_OF_WEEK = [
 
 class Shop(models.Model):
     """
-    \brief [This class starts the process of making the form that is needed to be filled out by business owners]
+    \brief Represents a business that offers services through the booking system.
+
+    The Shop model stores the business name, contact details, opening and closing
+    hours/days, and links to the user account of the owner. It also automatically
+    generates a unique slug for URL usage and enforces case-insensitive uniqueness
+    on the shop name.
+
+    Relationships:
+    - One-to-one with Django's \ref User (owner).
+    - One-to-many with \ref Appointment.
     """
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, blank=True)
