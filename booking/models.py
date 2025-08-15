@@ -1,15 +1,4 @@
 # booking/models.py
-## @file models.py
-## @brief Core Django models for the booking app.
-## @package booking
-##
-## Defines the main data structures:
-## - @ref Shop : a business that accepts appointments (owned by a User).
-## - @ref Client : customer contact information.
-## - @ref Appointment : a scheduled slot linking a Client to a Shop.
-##
-## Includes a case-insensitive name uniqueness constraint for Shop and a
-## slug generator to create stable, human-friendly URLs.
 import datetime
 from django.contrib.auth.models import User
 from django.db import models
@@ -28,26 +17,13 @@ DAYS_OF_WEEK = [
 
 class Shop(models.Model):
     """
-    \brief Represents a business that offers services through the booking system.
-
-    The Shop model stores the business name, contact details, opening and closing
-    hours/days, and links to the user account of the owner. It also automatically
-    generates a unique slug for URL usage and enforces case-insensitive uniqueness
-    on the shop name.
-
-    Relationships:
-    - One-to-one with Django's \ref User (owner).
-    - One-to-many with \ref Appointment.
-
-    Example usage:
-    ```
-    shop = Shop.objects.create(
-        name="My Salon",
-        owner=user,
-        opening_hours=datetime.time(9, 0),
-        closing_hours=datetime.time(17, 0)
-    )
-    ```
+    @brief Business owner profile and booking configuration.
+    Stores the shop's name, slug, owner (Django User), phone, and working hours.
+    @details
+      - Unique, case-insensitive `name` is enforced via a DB constraint.
+      - `slug` is auto-generated from `name` if not provided.
+      - Includes open/close times and days the shop accepts appointments.
+    @note Use `owner.shop` reverse relation to get a user's shop.
     """
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, blank=True)
@@ -94,6 +70,11 @@ class Shop(models.Model):
         return slug
 
     def save(self, *args, **kwargs):
+        """
+        @brief Ensure a unique slug before saving.
+        @return None
+        @post The `slug` field is set from `name` using `slugify`, with a numeric suffix if needed.
+        """
         # Only set/refresh slug if it's empty (keeps public links stable)
         if not self.slug:
             self.slug = self._unique_slug(self.name)
