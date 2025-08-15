@@ -13,6 +13,11 @@ from .models import Appointment, Client, Shop
 from .models import DAYS_OF_WEEK
 
 class AppointmentForm(forms.Form):
+    """
+    @brief Validates and creates `Appointment` instances.
+    @param shop Shop The shop context used to validate times/business days.
+    @warning Raises `forms.ValidationError` if the requested slot is invalid.
+    """
     # either pick an existing client or enter new info
     name       = forms.CharField(max_length=100)
     email      = forms.EmailField()
@@ -43,6 +48,11 @@ class AppointmentForm(forms.Form):
 
 
     def clean(self):
+        """
+        @brief Cross-field validations for appointment time and conflicts.
+        @exception forms.ValidationError on overlaps, closed days, or past times.
+        @return dict Cleaned data.
+        """
         cleaned = super().clean()
         shop = cleaned.get("shop")
         start_dt = cleaned.get("start_time")
@@ -107,6 +117,9 @@ class AppointmentForm(forms.Form):
 
 
 class ShopRegisterForm(UserCreationForm):
+    """
+    @brief Registration form for creating a `Shop` linked to the logged-in user.
+    """
 
     shop_name = forms.CharField(max_length=100)
     opening_hours = forms.TimeField(label="Opening Time", widget=forms.TimeInput(attrs={"type": "time", "step": 60}))
@@ -131,6 +144,10 @@ class ShopRegisterForm(UserCreationForm):
 
 
     def clean_shop_name(self):
+        """
+        @brief Enforce case-insensitive uniqueness of `name`.
+        @return str Normalized name.
+        """
         name = self.cleaned_data["shop_name"]
         if Shop.objects.filter(name__iexact=name).exists():
             raise forms.ValidationError("That shop name is already taken.")

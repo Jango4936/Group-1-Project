@@ -21,15 +21,25 @@ def home(request):
     return render(request, 'home.html')
 
 class ScheduleAppointment(View):
+    """
+    @brief Public booking page to select a date/time and submit an appointment.
+    @details GET renders the booking form; POST validates and creates the appointment.
+    """
     template_name = 'schedule.html'
 
     def get(self, request):
+        """@brief Render available slots and the booking form. @return HttpResponse"""
         form = AppointmentForm()
         # generic page must choose a shop
         form.fields['shop'].required = True
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        """
+        @brief Create an appointment from POSTed data.
+        @param request HttpRequest Incoming request with form fields.
+        @return HttpResponse Redirect on success; re-render with errors otherwise.
+        """
         form = AppointmentForm(request.POST)
         # generic page must choose a shop
         form.fields['shop'].required = True
@@ -110,6 +120,11 @@ class shopSettingsView(LoginRequiredMixin, TemplateView):
         return context
     
     def post(self, request, *args, **kwargs):
+        """
+        @brief Create an appointment from POSTed data.
+        @param request HttpRequest Incoming request with form fields.
+        @return HttpResponse Redirect on success; re-render with errors otherwise.
+        """
         shop = request.user.shop
 
         if "shop_name" in request.POST:
@@ -190,6 +205,7 @@ class shopHomePage(LoginRequiredMixin, ListView):
     ordering = ['start_time']               # optional: sort by time
 
     def get_queryset(self):
+        """@brief Return appointments for the logged-in shop owner. @return QuerySet"""
         # If the user hasn't linked a shop yet → no data
         if not hasattr(self.request.user, "shop"):
             return Appointment.objects.none()
@@ -241,9 +257,14 @@ class shopHomePage(LoginRequiredMixin, ListView):
 
 # subclass of shophomepage
 class shopAppointmentsManage(shopHomePage):
+    """
+    @brief Staff dashboard for viewing and managing appointments.
+    @details Filters by status and date; supports mark-complete/confirm/cancel actions.
+    """
     template_name = "shops/appointments_manage.html"
 
     def get_queryset(self):
+        """@brief Return appointments for the logged-in shop owner. @return QuerySet"""
         qs = super().get_queryset()              # all of this shop’s appts
         g  = self.request.GET
 
@@ -305,6 +326,11 @@ class UpdateShopAppointmentStatus(LoginRequiredMixin, View):
     success_url   = reverse_lazy("booking:appointments_manage")
 
     def post(self, request, pk, *args, **kwargs):
+        """
+        @brief Create an appointment from POSTed data.
+        @param request HttpRequest Incoming request with form fields.
+        @return HttpResponse Redirect on success; re-render with errors otherwise.
+        """
         if self.status_value is None:
             return HttpResponseNotAllowed(["POST"])
 
@@ -319,6 +345,7 @@ class UpdateShopAppointmentStatus(LoginRequiredMixin, View):
 
     # block GET for safety
     def get(self, *args, **kwargs):
+        """@brief Render available slots and the booking form. @return HttpResponse"""
         return HttpResponseNotAllowed(["POST"])
     
 class MarkCompleted(UpdateShopAppointmentStatus):
@@ -336,6 +363,7 @@ class ShopAppointment(View):
     template_name = 'book_shop.html'
 
     def get(self, request, slug):
+        """@brief Render available slots and the booking form. @return HttpResponse"""
         shop = get_object_or_404(Shop, slug=slug)
         form = AppointmentForm(initial={'shop': shop})
         form.fields['shop'].queryset = Shop.objects.filter(pk=shop.pk)
@@ -343,6 +371,11 @@ class ShopAppointment(View):
         return render(request, self.template_name, {'form': form, 'shop': shop})
 
     def post(self, request, slug):
+        """
+        @brief Create an appointment from POSTed data.
+        @param request HttpRequest Incoming request with form fields.
+        @return HttpResponse Redirect on success; re-render with errors otherwise.
+        """
         shop = get_object_or_404(Shop, slug=slug)
         form = AppointmentForm(request.POST)
 

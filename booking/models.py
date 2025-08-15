@@ -57,6 +57,7 @@ class Shop(models.Model):
                    )
 
     def __str__(self):
+        """@brief Human-readable identifier used in admin and templates."""
         return self.name
     
     def _unique_slug(self, base):
@@ -82,14 +83,27 @@ class Shop(models.Model):
 
 
 class Client(models.Model):
+    """
+    @brief A customer who books appointments with a Shop.
+    @details Stores contact information (name, phone, email) and optional notes.
+    """
     name  = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
 
     def __str__(self):
+        """@brief Human-readable identifier used in admin and templates."""
         return f"{self.name} ({self.email})"
 
 class Appointment(models.Model):
+    """
+    @brief A scheduled service between a Client and a Shop.
+    @details
+      - `start_time`: timezone-aware datetime for the appointment start
+      - `duration`: `datetime.timedelta`, defaults to 30 minutes
+      - `status`: one of {"Confirmed","Completed","Cancelled"}
+    @invariant duration.total_seconds() > 0
+    """
 
     STATUS_CHOICES = [
         ("Pending",    "Pending"),
@@ -112,4 +126,5 @@ class Appointment(models.Model):
 
 
     def __str__(self):
+        """@brief Human-readable identifier used in admin and templates."""
         return f"{self.client.name} @ {self.start_time}"
