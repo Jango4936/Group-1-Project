@@ -1,0 +1,39 @@
+# Doxygen config for a Python (Django) project
+PROJECT_NAME           = "Group-1-Project Booking API"
+PROJECT_BRIEF          = "Auto-generated API docs for the booking app (Django)"
+OUTPUT_DIRECTORY       = docs/doxygen
+GENERATE_LATEX         = NO
+RECURSIVE              = YES
+
+# Point Doxygen at the project root
+INPUT                  = ./booking ./config ./manage.py
+
+# Only parse Python files
+FILE_PATTERNS          = *.py
+
+# Make Doxygen pick up everything even without comments
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+JAVADOC_AUTOBRIEF      = YES
+
+# Treat .py as Python (helps in some cases)
+EXTENSION_MAPPING      = py=Python
+
+# Use doxypypy to turn Python docstrings into Doxygen-friendly comments.
+# pip install doxypypy
+FILTER_PATTERNS        = *.py="python3 -m doxypypy.doxypypy -a -c"
+
+# Show directories, files, classes, and functions
+GENERATE_TREEVIEW      = YES
+FULL_PATH_NAMES        = NO
+OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_JAVA   = NO
+
+# HTML output
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+# Warnings
+WARN_IF_UNDOCUMENTED   = YES
+WARN_LOGFILE           = docs/doxygen/warnings.log
