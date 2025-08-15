@@ -1,4 +1,15 @@
 # booking/models.py
+## @file models.py
+## @brief Core Django models for the booking app.
+## @package booking
+##
+## Defines the main data structures:
+## - @ref Shop : a business that accepts appointments (owned by a User).
+## - @ref Client : customer contact information.
+## - @ref Appointment : a scheduled slot linking a Client to a Shop.
+##
+## Includes a case-insensitive name uniqueness constraint for Shop and a
+## slug generator to create stable, human-friendly URLs.
 import datetime
 from django.contrib.auth.models import User
 from django.db import models
