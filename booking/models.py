@@ -17,7 +17,7 @@ DAYS_OF_WEEK = [
 
 class Shop(models.Model):
     """
-    This class starts the process of making the form that is needed to be filled out by business owners
+    \brief [This class starts the process of making the form that is needed to be filled out by business owners]
     """
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, blank=True)
